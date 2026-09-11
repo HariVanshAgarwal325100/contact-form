@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+    .form-container { max-width: 400px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:disabled { background-color: #aaa; }
+    #status { margin-top: 15px; text-align: center; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Contact Us</h2>
+  <form id="contactForm">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="4" required></textarea>
+    </div>
+    <button type="submit" id="submitBtn">Send Message</button>
+  </form>
+  <div id="status"></div>
+</div>
+
+<script>
+  // REPLACE THIS WITH YOUR APPS SCRIPT WEB APP URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpo5TaXTDoIqcw_kTarC_81ao6Tnl01p4R3m_139P3lGtdOdp-wriCQ8GEF8lS2g2gzw/exec";
+
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('status');
+    
+    submitBtn.disabled = true;
+    statusDiv.style.color = '#333';
+    statusDiv.innerText = 'Sending...';
+
+    const formData = new FormData(this);
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.result === 'success') {
+        statusDiv.style.color = 'green';
+        statusDiv.innerText = 'Thank you! Your message has been sent.';
+        document.getElementById('contactForm').reset();
+      } else {
+        throw new Error(data.error);
+      }
+    })
+    .catch(error => {
+      statusDiv.style.color = 'red';
+      statusDiv.innerText = 'An error occurred. Please try again.';
+      console.error('Error:', error);
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+    });
+  });
+</script>
+
+</body>
+</html>
